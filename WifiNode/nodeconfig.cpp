@@ -26,6 +26,7 @@ ERROR_CODE g_error=NORMAL;
 
 bool recv_ok = false;
 bool recvl_ok = false;
+bool recv2_ok = false;
 bool hasSD = false;
 bool rst_usb = false;
 bool paused_for_user = false;

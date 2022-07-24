@@ -46,6 +46,7 @@ void setWifiConfigByPort(String config_str)
 }
 
 String inData="";//Gcode Command return value
+String outData="";//Gcode Command received from USB-C (PC_PORT)
 void readPrinterBack()
 {
   //读取所有的数据
@@ -59,13 +60,35 @@ void readPrinterBack()
     inData += recieved; 
   }
 
+  while (PC_PORT.available() > 0 && recv2_ok == false)
+  {
+    char recieved = PC_PORT.read();
+    if (recieved == '\n')
+    {
+      recv2_ok = true;
+    }
+    outData += recieved; 
+  }
+
+  if(recv2_ok == true)
+  {
+    if(outData.length()>=2)
+    {
+      PRINTER_PORT.print(outData);
+    }
+    else 
+    {
+      recv2_ok = false;  
+    }
+  }
+
   //根据所含的inData做出具体的反应
   if (recvl_ok == true)
   {
     if(inData.length()>=2)
     {
       writeLog(cf_node_name+":"+inData);
-      // writeLog(inData); 
+      PC_PORT.print(inData); 
       if(inData.startsWith("&&"))
       {
         setWifiConfigByPort(inData);
@@ -164,7 +187,7 @@ void readPrinterBack()
     }
     else
     {
-      recvl_ok = false;  
+      recvl_ok = false;
     }    /* code */
     inData="";
   }

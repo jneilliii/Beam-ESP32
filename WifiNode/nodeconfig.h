@@ -21,9 +21,10 @@
 #include "crc8.h"
 #include "FiberPunk_SSD1306.h"
 
-#define VERSION "2022-6-8-2005"
+#define VERSION "2022-7-24"
 #define DBG_OUTPUT_PORT Serial
 #define PRINTER_PORT Serial
+#define PC_PORT Serial1
 #define RED_LED 26
 #define GREEN_LED 25
 #define BLUE_LED 27
@@ -78,6 +79,7 @@ extern bool time_out;
 extern bool hasSD;
 extern bool recv_ok;
 extern bool recvl_ok;
+extern bool recv2_ok;
 extern bool rst_usb;
 extern bool paused_for_user;
 extern bool paused_for_filament;
