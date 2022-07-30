@@ -4,8 +4,37 @@
 
 extern void cancleOrFinishPrint();
 extern void espGetSDCard();
+void sendCmd(String cmd);
 void printLoop(void * parameter);
 
+void sendCmd(String cmd)
+{
+  // writeLog("Send:");
+  // writeLog(cmd);
+  if(current_usb_status)
+  {
+      cmd_length = cmd.length();
+      uint8_t package[cmd_length+4];
+      
+      char str_buf[cmd_length];
+      
+      memset(package, ' ', cmd_length+4);  //fill the package with space char
+
+      package[0] = 0xff;         //package head
+      package[1] = cmd_length;
+      cmd.toCharArray(str_buf, cmd_length);
+      memcpy(&package[2], str_buf, cmd_length);
+      package[cmd_length+1] = 0x0a;
+      package[cmd_length+2] = gcrc.get_crc8((uint8_t const*)(package+2), cmd_length);  //input the crc data
+      package[cmd_length+3] = 0xfd; //package tail
+      
+      //String sendgc((char*)package);
+      PRINTER_PORT.write(package,cmd_length+4);
+      //PRINTER_PORT.print(sendgc);
+      PRINTER_PORT.flush();
+  }
+
+}
 
 void setWifiConfigByPort(String config_str)
 {
@@ -68,8 +97,10 @@ void readPrinterBack()
       // writeLog(inData); 
       if(inData.startsWith("&&"))
       {
-        setWifiConfigByPort(inData);
+        //setWifiConfigByPort(inData);
+        sendCmd(inData.substring(2));
       }
+      
       if(inData.indexOf("setusb")!=-1)
       {
 //        if (g_status!=PRINTING)
